@@ -2,6 +2,7 @@ package com.epagagames.windows.propwrappers;
 
 import com.epagagames.particles.BillboardMode;
 import com.epagagames.particles.Emitter;
+import com.epagagames.particles.EmitterShape;
 import com.epagagames.particles.influencers.*;
 import com.epagagames.windows.props.*;
 import com.jme3.scene.Spatial;
@@ -57,6 +58,7 @@ public class MonkeyEmitterWrap extends WrapBase {
       //nameProp.render(spatial);
 
       if (ImGui.collapsingHeader("Emitter")) {
+        ImGui.labelText("Active Particles", "" + emitter.getActiveParticleCount());
         billboardMode.render(spatial);
 
         looping.render(spatial);
@@ -67,6 +69,10 @@ public class MonkeyEmitterWrap extends WrapBase {
         duration.render(spatial);
         emissionsPerSecond.render(spatial);
         partPerEmission.render(spatial);
+
+        EmitterShape shape = emitter.getShape();
+
+        ImGui.separator();
 
         startSize.render(spatial);
         lifeMin.render(spatial);
