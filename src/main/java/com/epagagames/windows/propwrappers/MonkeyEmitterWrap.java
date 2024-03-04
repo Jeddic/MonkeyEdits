@@ -34,6 +34,8 @@ public class MonkeyEmitterWrap extends WrapBase {
   private PropColorValue colorInfluencer_color = new PropColorValue("Color Over Time", ColorInfluencer.class, "getColorOverTime", "setColorOverTime");
   private PropValueType sizeInfluencer_size = new PropValueType("Size Over Time", SizeInfluencer.class, "getSizeOverTime", "setSizeOverTime");
 
+  private ShapeWrapBase shapeWrap = new ShapeWrapBase();
+
   private ImBoolean basicPhysicsInfluencer = new ImBoolean();
   private ImBoolean colorInfluencer = new ImBoolean();
   private ImBoolean emissionInfluencer = new ImBoolean();
@@ -71,7 +73,8 @@ public class MonkeyEmitterWrap extends WrapBase {
         partPerEmission.render(spatial);
 
         EmitterShape shape = emitter.getShape();
-
+        ImGui.separator();
+        shapeWrap.render(emitter, shape);
         ImGui.separator();
 
         startSize.render(spatial);

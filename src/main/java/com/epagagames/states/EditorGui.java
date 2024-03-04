@@ -1,6 +1,7 @@
 package com.epagagames.states;
 
 import com.epagagames.AppState;
+import com.epagagames.particles.Emitter;
 import com.epagagames.windows.PropertyWindow;
 import com.epagagames.windows.SceneWindow;
 import com.jme3.app.Application;
@@ -9,6 +10,7 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.binary.BinaryExporter;
+import com.jme3.scene.Node;
 import com.jme3.system.lwjgl.LwjglWindow;
 import imgui.ImGui;
 import imgui.extension.imguifiledialog.ImGuiFileDialog;
@@ -48,8 +50,13 @@ public class EditorGui extends AbstractAppState {
   private SceneWindow sceneWindow;
   private PropertyWindow propertyWindow;
 
+  private ImBoolean debugViewCheck = new ImBoolean(false);
+
+  private SimpleApplication application;
+
   @Override
   public void initialize(AppStateManager stateManager, Application app) {
+    application = (SimpleApplication)app;
     LwjglWindow lwjglContext = (LwjglWindow) app.getContext();
     handle = lwjglContext.getWindowHandle();
     ImGui.createContext();
@@ -118,6 +125,17 @@ public class EditorGui extends AbstractAppState {
       }
 
 
+      ImGui.endMenu();
+    }
+    if (ImGui.beginMenu("View")) {
+      if (ImGui.menuItem("Debug Shapes", "", debugViewCheck)) {
+          Node rootNode = application.getRootNode();
+          rootNode.breadthFirstTraversal(spatial -> {
+            if (spatial instanceof Emitter emitter) {
+              emitter.setDebug(application.getAssetManager(), debugViewCheck.get(), false);
+            }
+          });
+      }
       ImGui.endMenu();
     }
     ImGui.endMainMenuBar();
