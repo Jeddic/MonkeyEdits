@@ -63,6 +63,8 @@ public class EditorGui extends AbstractAppState {
     ImGui.getIO().setIniFilename("editor.ini");
     ImGui.getIO().addConfigFlags(ImGuiConfigFlags.DockingEnable);
 
+    // Needed for OSX to compile
+    glslVersion = "#version 330 core";
     imGuiGlfw.init(handle, true);
     imGuiGl3.init(glslVersion);
 

@@ -12,7 +12,7 @@ public class Main {
     settings.setFullscreen(false);
     //app.setDisplayStatView(true);
     settings.setResolution(1920, 1080);
-    settings.setRenderer(AppSettings.LWJGL_OPENGL33);
+    //settings.setRenderer(AppSettings.LW);
     me.setSettings(settings);
     me.start();
   }
