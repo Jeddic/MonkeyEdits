@@ -31,9 +31,13 @@ public class MonkeyEmitterWrap extends WrapBase {
 
   private PropColorValue startColor = new PropColorValue("Start Color", Emitter.class, "getStartColor", "setStartColor");
 
-  private PropColorValue colorInfluencer_color = new PropColorValue("Color Over Time", ColorInfluencer.class, "getColorOverTime", "setColorOverTime");
-  private PropValueType sizeInfluencer_size = new PropValueType("Size Over Time", SizeInfluencer.class, "getSizeOverTime", "setSizeOverTime");
+  private PropColorValue colorInfluencer_color = new PropColorValue("Color", ColorInfluencer.class, "getColorOverTime", "setColorOverTime");
+  private PropValueType sizeInfluencer_size = new PropValueType("Size", SizeInfluencer.class, "getSizeOverTime", "setSizeOverTime");
 
+  private PropVecValueType gravity = new PropVecValueType("Gravity", GravityInfluencer.class, "getGravity", "setGravity");
+  private PropFloat randomChance = new PropFloat("Chance", RandomInfluencer.class, "getChance", "setChance");
+  private PropFloat randomMag = new PropFloat("Magnitude", RandomInfluencer.class, "getMagnitude", "setMagnitude");
+  private PropFloat randomStr = new PropFloat("Strength", RandomInfluencer.class, "getStrength", "setStrength");
   private ShapeWrapBase shapeWrap = new ShapeWrapBase();
 
   private ImBoolean basicPhysicsInfluencer = new ImBoolean();
@@ -135,6 +139,7 @@ public class MonkeyEmitterWrap extends WrapBase {
           if (influencer instanceof GravityInfluencer gravInf) {
             ImGui.text("Gravity");
             ImGui.separator();
+            gravity.render(gravInf);
           }
           if (influencer instanceof ImpulseInfluencer impInf) {
             ImGui.text("Impulse");
@@ -153,6 +158,9 @@ public class MonkeyEmitterWrap extends WrapBase {
           if (influencer instanceof RandomInfluencer randInf) {
             ImGui.text("Random");
             ImGui.separator();
+            randomChance.render(randInf);
+            randomMag.render(randInf);
+            randomStr.render(randInf);
           }
           if (influencer instanceof RotationLifetimeInfluencer rotInf) {
 

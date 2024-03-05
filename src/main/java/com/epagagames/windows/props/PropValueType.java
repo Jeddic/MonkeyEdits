@@ -2,6 +2,7 @@ package com.epagagames.windows.props;
 
 import com.epagagames.particles.valuetypes.Curve;
 import com.epagagames.particles.valuetypes.ValueType;
+import com.jme3.math.Vector2f;
 import imgui.ImGui;
 import imgui.type.ImFloat;
 import imgui.type.ImInt;
@@ -17,6 +18,9 @@ public class PropValueType extends PropBase {
 
   private ImFloat value = new ImFloat();
   private ImFloat valueSecond = new ImFloat();
+
+  private CurveRender curveRender = new CurveRender();
+  private CurveRender curveRenderMax = new CurveRender();
   private String name = "DEF";
 
   private String[] modes = {"Constant", "Random", "Curve", "Random Between Curve"};
@@ -40,10 +44,6 @@ public class PropValueType extends PropBase {
       } else if (current != null && current.getType() == ValueType.Type.RANDOM) {
         value.set(current.getValue());
         valueSecond.set(current.getMax());
-      } else if (current != null && current.getType() == ValueType.Type.CURVE) {
-        Curve curve = current.getCurve();
-
-      } else if (current != null && current.getType() == ValueType.Type.RANDOM_BETWEEN_CURVES) {
       }
 
       ImGui.columns(2);
@@ -56,7 +56,21 @@ public class PropValueType extends PropBase {
         var newMode = ValueType.Type.values()[modeIndex.intValue()];
         if (newMode == ValueType.Type.CONSTANT) current.setValue(1.0f);
         if (newMode == ValueType.Type.RANDOM) current.setMinMaxValue(0.0f, 1.0f);
-        //if (newMode == ValueType.Type.CURVE) current.setCurve();
+        if (newMode == ValueType.Type.CURVE) {
+          Curve c = new Curve();
+          c.addControlPoint(new Vector2f(), new Vector2f(0.0f, 0.0f), new Vector2f(0.1f, 0.0f));
+          c.addControlPoint(new Vector2f(.9f, 1.0f), new Vector2f(1.0f, 1.0f), new Vector2f());
+          current.setCurve(c);
+        }
+        if (newMode == ValueType.Type.RANDOM_BETWEEN_CURVES) {
+          Curve c = new Curve();
+          c.addControlPoint(new Vector2f(), new Vector2f(0.0f, 0.0f), new Vector2f(0.1f, 0.0f));
+          c.addControlPoint(new Vector2f(.9f, 0.0f), new Vector2f(1.0f, 0.0f), new Vector2f());
+          Curve c2 = new Curve();
+          c2.addControlPoint(new Vector2f(), new Vector2f(0.0f, 1.0f), new Vector2f(0.1f, 1.0f));
+          c2.addControlPoint(new Vector2f(.9f, 1.0f), new Vector2f(1.0f, 1.0f), new Vector2f());
+          current.setBetweenCurves(c, c2);
+        }
         //if (newMode == ValueType.Type.RANDOM_BETWEEN_CURVES) current.setBetweenCurves();
       }
       if (current.getType() == ValueType.Type.CONSTANT) {
@@ -69,6 +83,13 @@ public class PropValueType extends PropBase {
         ImGui.newLine();
         ImGui.inputFloat("##" + name + "End", valueSecond);
 
+      } else if (current.getType() == ValueType.Type.CURVE) {
+        curveRender.render(current.getCurve());
+      } else if (current.getType() == ValueType.Type.RANDOM_BETWEEN_CURVES) {
+        ImGui.text("Min Curve");
+        curveRender.render(current.getCurve());
+        ImGui.text("Max Curve");
+        curveRenderMax.render(current.getCurveMax());
       }
       ImGui.columns(1);
 //      if (current != null && current.floatValue() != value.floatValue()) {
@@ -81,8 +102,6 @@ public class PropValueType extends PropBase {
         current.setValue(value.get());
       } else if (current != null && current.getType() == ValueType.Type.RANDOM) {
         current.setMinMaxValue(value.get(), valueSecond.get());
-      } else if (current != null && current.getType() == ValueType.Type.CURVE) {
-      } else if (current != null && current.getType() == ValueType.Type.RANDOM_BETWEEN_CURVES) {
       }
     } catch (IllegalAccessException e) {
       throw new RuntimeException(e);

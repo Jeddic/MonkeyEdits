@@ -101,7 +101,7 @@ public class PropColorValue extends PropBase{
           ImGui.sameLine();
           ImGui.inputFloat("##gradtime" + i, gradientTempTime[i]);
         }
-        if (ImGui.button("+")) {
+        if (ImGui.button("+##addGradPoint")) {
           addGradientPoint = true;
         }
       }

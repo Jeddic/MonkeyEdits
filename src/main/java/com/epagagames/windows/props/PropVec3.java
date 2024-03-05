@@ -30,55 +30,16 @@ public class PropVec3 extends PropBase {
   public void render(Object obj) {
     try {
       Vector3f current = (Vector3f) get.invoke(obj);
-      x.set(current.x);
-      y.set(current.y);
-      z.set(current.z);
 
       ImGui.columns(2);
       ImGui.setColumnWidth(0, COLUMN_WIDTH);
       ImGui.text(name);
       ImGui.nextColumn();
-      ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0.0f, 0.0f);
-
-      float lineHeight = ImGui.getFont().getFontSize() + ImGui.getStyle().getFramePaddingY();
-      ImVec2 buttonSize = new ImVec2(lineHeight + 3.0f, lineHeight + 3.0f);
-      ImVec2 contentRegion = ImGui.getContentRegionAvail();
-      float itemWidth = (contentRegion.x - buttonSize.x * 3)/3;
-
-      ImGui.pushStyleColor(ImGuiCol.Button, 0.8f, 0.2f, 0.2f, 1.0f);
-      if (ImGui.button("X", buttonSize.x, buttonSize.y)) {
-        x.set(0.0f);
-      }
-      ImGui.sameLine();
-      ImGui.setNextItemWidth(itemWidth);
-      ImGui.inputFloat("##x" + name, x);
-      ImGui.popStyleColor();
-
-      ImGui.sameLine();
-      ImGui.pushStyleColor(ImGuiCol.Button, 0.2f, 0.8f, 0.2f, 1.0f);
-      if (ImGui.button("Y", buttonSize.x, buttonSize.y)) {
-        y.set(0.0f);
-      }
-      ImGui.sameLine();
-      ImGui.setNextItemWidth(itemWidth);
-      ImGui.inputFloat("##y" + name, y);
-      ImGui.popStyleColor();
-
-      ImGui.sameLine();
-      ImGui.pushStyleColor(ImGuiCol.Button, 0.2f, 0.2f, 0.8f, 1.0f);
-      if (ImGui.button("Z", buttonSize.x, buttonSize.y)) {
-        z.set(0.0f);
-      }
-      ImGui.sameLine();
-      ImGui.setNextItemWidth(itemWidth);
-      ImGui.inputFloat("##z" + name, z);
-      ImGui.popStyleColor();
+      renderControl(current);
 
       ImGui.columns(1);
 
-      ImGui.popStyleVar(1);
 
-      temp.set(x.get(), y.get(), z.get());
       set.invoke(obj, temp);
     } catch (IllegalAccessException e) {
       throw new RuntimeException(e);
@@ -87,5 +48,53 @@ public class PropVec3 extends PropBase {
     }catch (IllegalArgumentException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public Vector3f renderControl(Vector3f current) {
+    ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0.0f, 0.0f);
+
+    x.set(current.x);
+    y.set(current.y);
+    z.set(current.z);
+
+    float lineHeight = ImGui.getFont().getFontSize() + ImGui.getStyle().getFramePaddingY();
+    ImVec2 buttonSize = new ImVec2(lineHeight + 3.0f, lineHeight + 3.0f);
+    ImVec2 contentRegion = ImGui.getContentRegionAvail();
+    float itemWidth = (contentRegion.x - buttonSize.x * 3)/3;
+
+    ImGui.pushStyleColor(ImGuiCol.Button, 0.8f, 0.2f, 0.2f, 1.0f);
+    if (ImGui.button("X", buttonSize.x, buttonSize.y)) {
+      x.set(0.0f);
+    }
+    ImGui.sameLine();
+    ImGui.setNextItemWidth(itemWidth);
+    ImGui.inputFloat("##x" + name, x);
+    ImGui.popStyleColor();
+
+    ImGui.sameLine();
+    ImGui.pushStyleColor(ImGuiCol.Button, 0.2f, 0.8f, 0.2f, 1.0f);
+    if (ImGui.button("Y", buttonSize.x, buttonSize.y)) {
+      y.set(0.0f);
+    }
+    ImGui.sameLine();
+    ImGui.setNextItemWidth(itemWidth);
+    ImGui.inputFloat("##y" + name, y);
+    ImGui.popStyleColor();
+
+    ImGui.sameLine();
+    ImGui.pushStyleColor(ImGuiCol.Button, 0.2f, 0.2f, 0.8f, 1.0f);
+    if (ImGui.button("Z", buttonSize.x, buttonSize.y)) {
+      z.set(0.0f);
+    }
+    ImGui.sameLine();
+    ImGui.setNextItemWidth(itemWidth);
+    ImGui.inputFloat("##z" + name, z);
+
+    ImGui.popStyleColor();
+    ImGui.popStyleVar(1);
+
+    temp.set(x.get(), y.get(), z.get());
+
+    return temp;
   }
 }
