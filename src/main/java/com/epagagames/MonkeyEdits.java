@@ -17,18 +17,13 @@ public class MonkeyEdits extends SimpleApplication {
     stateManager.attach(new EditorGui());
 
     inputManager.setCursorVisible(true);
-    flyCam.setEnabled(false);
+    flyCam.setEnabled(true);
 
-    Sphere mesh = new Sphere(25, 25, 2, false, true);
-    Geometry geom = new Geometry("A shape", mesh); // wrap shape into geometry
-    Material mat = new Material(assetManager,
-        "Common/MatDefs/Misc/ShowNormals.j3md");   // create material
-    geom.setMaterial(mat);                         // assign material to geometry
-    geom.setLocalTranslation(0, -5.0f, 0);
-// if you want, transform (move, rotate, scale) the geometry.
-    rootNode.attachChild(geom);
+    rootNode.attachChild(createDefaultEmitter());
+  }
 
-    mat = new Material(assetManager, "Common/MatDefs/Misc/Particle.j3md");
+  public Emitter createDefaultEmitter() {
+    Material mat = new Material(assetManager, "Common/MatDefs/Misc/Particle.j3md");
     mat.getAdditionalRenderState().setFaceCullMode(RenderState.FaceCullMode.Off);
     Texture tex = assetManager.loadTexture("Effects/Particles/part_light.png");
     mat.setTexture("Texture", tex);
@@ -41,8 +36,8 @@ public class MonkeyEdits extends SimpleApplication {
     emitter.setShape(new EmitterCone());
     ((EmitterCone)emitter.getShape()).setRadius(0.005f);
 
-    emitter.setLocalTranslation(0, 0.5f, 0);
-    rootNode.attachChild(emitter);
+    emitter.setLocalTranslation(0, 0.0f, 0);
+    return emitter;
   }
 
   @Override

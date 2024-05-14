@@ -1,6 +1,7 @@
 package com.epagagames.states;
 
 import com.epagagames.AppState;
+import com.epagagames.MonkeyEdits;
 import com.epagagames.particles.Emitter;
 import com.epagagames.windows.PropertyWindow;
 import com.epagagames.windows.SceneWindow;
@@ -8,9 +9,12 @@ import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.asset.AssetManager;
+import com.jme3.asset.plugins.FileLocator;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.binary.BinaryExporter;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.jme3.system.lwjgl.LwjglWindow;
 import imgui.ImGui;
 import imgui.extension.imguifiledialog.ImGuiFileDialog;
@@ -71,6 +75,7 @@ public class EditorGui extends AbstractAppState {
 
     state = new AppState();
     state.rootNode = ((SimpleApplication)app).getRootNode();
+    state.application = (MonkeyEdits)app;
 
     sceneWindow = new SceneWindow();
     propertyWindow = new PropertyWindow();
@@ -96,6 +101,24 @@ public class EditorGui extends AbstractAppState {
       ImGui.text("Filter: " + filter);
     }
   };
+
+  private void saveFile(Spatial spatial, String filename) {
+      JmeExporter exporter = BinaryExporter.getInstance();
+      File file = new File(filename);
+      try {
+        exporter.save(spatial, file);
+      } catch (IOException exception) {
+        //logger.log(Level.SEVERE, "write to {0} failed", filePath);
+      }
+  }
+
+  private Spatial loadFile(String filename) {
+    AssetManager manager = state.application.getAssetManager();
+    manager.registerLocator(".", FileLocator.class);
+    Spatial object = manager.loadModel(filename);
+    return object;
+  }
+
   @Override
   public void postRender() {
 
@@ -109,23 +132,21 @@ public class EditorGui extends AbstractAppState {
     ImGui.beginMainMenuBar();
     if(ImGui.beginMenu("File")) {
       if (ImGui.menuItem("New")) {
-
+        state.rootNode.detachAllChildren();
+        state.rootNode.attachChild(state.application.createDefaultEmitter());
+        state.loadedFile = "";
       }
+      ImGui.beginDisabled(state.loadedFile.isEmpty());
       if (ImGui.menuItem("Save")) {
-          ImGuiFileDialog.openModal("browse-key", "Save File", ".j3o", ".", callback, 250, 1, 42, ImGuiFileDialogFlags.None);
-
-
-//        if (state.selectedNode != null) {
-//          JmeExporter exporter = BinaryExporter.getInstance();
-//          File file = new File("test.j3o");
-//          try {
-//            exporter.save(state.selectedNode, file);
-//          } catch (IOException exception) {
-//            //logger.log(Level.SEVERE, "write to {0} failed", filePath);
-//          }
-//        }
+        saveFile(application.getRootNode(), state.loadedFile);
       }
-
+      ImGui.endDisabled();
+      if (ImGui.menuItem("Save As")) {
+        ImGuiFileDialog.openModal("save-key", "Save As File", ".j3o", ".", callback, 250, 1, 42, ImGuiFileDialogFlags.None);
+      }
+      if (ImGui.menuItem("Load")) {
+        ImGuiFileDialog.openModal("browse-key", "Load File", ".j3o", ".", callback, 250, 1, 42, ImGuiFileDialogFlags.None);
+      }
 
       ImGui.endMenu();
     }
@@ -148,12 +169,23 @@ public class EditorGui extends AbstractAppState {
         HashMap<String, String> selection = ImGuiFileDialog.getSelection();
         long userData = ImGuiFileDialog.getUserDatas();
         int red5 = 0;
+        state.rootNode.detachAllChildren();
+        state.loadedFile = filename;
+        Spatial loaded = loadFile(filename);
+        state.rootNode.attachChild(loaded);
       }
       ImGuiFileDialog.close();
     }
-
-    ImGui.setNextWindowSize(300, 300, ImGuiCond.Once);
-    ImGui.setNextWindowPos(ImGui.getMainViewport().getPosX() + 200, ImGui.getMainViewport().getPosY() + 200, ImGuiCond.Once);
+    if (ImGuiFileDialog.display("save-key", ImGuiFileDialogFlags.None, 200, 400, 800, 600)) {
+      if (ImGuiFileDialog.isOk()) {
+        String filename = ImGuiFileDialog.getCurrentFileName();
+        HashMap<String, String> selection = ImGuiFileDialog.getSelection();
+        long userData = ImGuiFileDialog.getUserDatas();
+        int red5 = 0;
+        saveFile(application.getRootNode(), filename);
+      }
+      ImGuiFileDialog.close();
+    }
 
     sceneWindow.render(state);
     propertyWindow.render(state);

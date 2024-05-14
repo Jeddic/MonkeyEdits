@@ -24,8 +24,8 @@ public class PropertyWindow {
 
   public void render(AppState state) {
 
-    ImGui.setNextWindowPos(10.0f, 10.0f, ImGuiCond.Once);
-    ImGui.setNextWindowSize(200.0f, 400.0f, ImGuiCond.Once);
+    ImGui.setNextWindowPos(10.0f, 10.0f, ImGuiCond.FirstUseEver);
+    ImGui.setNextWindowSize(200.0f, 400.0f, ImGuiCond.FirstUseEver);
     if (ImGui.begin("Properties", showSceneWindow)) {
       if (state.selectedNode != null) {
         for (WrapBase wrap : wrapBases) {
